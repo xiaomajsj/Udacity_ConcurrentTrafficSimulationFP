@@ -20,6 +20,9 @@ template <typename T>
 void MessageQueue<T>::send(T &&msg)
 {
   std::lock_guard<std::mutex> _sendLock(_MsgMutex);
+  while(!_queue.empty()){
+  _queue.pop_back();
+  }
   _queue.push_back(std::move(msg));
   std::cout<<"Message #"<<msg<<" will be added in the queue."<<std::endl;
   ++_msgNum;
@@ -47,7 +50,7 @@ void TrafficLight::waitForGreen()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         TrafficLightPhase Recmsg = _lightPhaseQueue->receive();
         std::cout<<"receiving light msg as= "<<Recmsg<<std::endl;
-        if(this->getCurrentPhase()==TrafficLightPhase::green)
+        if(Recmsg==TrafficLightPhase::green)
         {std::cout<<"now is green= "<<Recmsg<<std::endl;
         break;}
     }
