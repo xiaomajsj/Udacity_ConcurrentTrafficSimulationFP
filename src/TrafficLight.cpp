@@ -50,7 +50,7 @@ void TrafficLight::waitForGreen()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         TrafficLightPhase Recmsg = _lightPhaseQueue->receive();
         std::cout<<"receiving light msg as= "<<Recmsg<<std::endl;
-        if(Recmsg==TrafficLightPhase::green)
+        //if(this->getCurrentPhase()==TrafficLightPhase::green)
         {std::cout<<"now is green= "<<Recmsg<<std::endl;
         break;}
     }
