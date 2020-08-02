@@ -3,6 +3,8 @@
 
 #include <mutex>
 #include <deque>
+#include <thread>
+#include <stdlib.h>
 #include <condition_variable>
 #include "TrafficObject.h"
 #include <time.h>
@@ -20,10 +22,17 @@ template <class T>
 class MessageQueue
 {
 public:
-void receiive();
+int getMsgnum(){return _msgNum;}
+
+T receive();
+void send(T &&msg);
+
+
 private:
 std::mutex _MsgMutex;
 std::condition_variable _MsgCond;
+std::deque<T> _queue;
+int _msgNum;
     
 };
 
@@ -47,11 +56,11 @@ public:
 
     // getters / setters
     TrafficLightPhase getCurrentPhase();
+    TrafficLightPhase getRecPhase(){return Recmsg;}
 
     // typical behaviour methods
     void waitForGreen();
     void simulate();
-    TrafficLightPhase getCurrentPhase();
 private:
     // typical behaviour methods
     void cycleThroughPhases();
@@ -63,10 +72,13 @@ private:
     std::mutex _mutex;
 
     TrafficLightPhase _currentPhase;
+    TrafficLightPhase Recmsg;
 
-    bool TrafficLightStartTimeRefresh = true;
-    clock_t TrafficLightStartTime;
+
     int LightDuration;
+
+    std::shared_ptr<MessageQueue<TrafficLightPhase>> _lightPhaseQueue;
+
 };
 
 #endif
